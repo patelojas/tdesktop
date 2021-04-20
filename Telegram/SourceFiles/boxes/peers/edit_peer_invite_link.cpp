@@ -5,6 +5,11 @@ the official desktop application for the Telegram messaging service.
 For license and copyright information please follow this link:
 https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
+
+
+#define RLBOX_SINGLE_THREADED_INVOCATIONS
+#define RLBOX_USE_STATIC_CALLS() rlbox_noop_sandbox_lookup_symbol
+
 #include "boxes/peers/edit_peer_invite_link.h"
 
 #include "data/data_peer.h"
@@ -47,6 +52,17 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 #include <QtGui/QGuiApplication>
 #include <QtCore/QMimeData>
+
+#include "rlbox.hpp"
+#include "rlbox_noop_sandbox.hpp"
+
+// #include "qr/r_libtest.h"
+// #include "qr/r_libtest_structs_for_cpp_api.h"
+#include "qr/qr_generate_structs_for_cpp_api.h"
+rlbox_load_structs_from_library(qr_generate);
+// rlbox_load_structs_from_library(libtest); 
+
+using namespace rlbox;
 
 namespace {
 
@@ -119,6 +135,10 @@ private:
 }
 
 QImage QrExact(const Qr::Data &data, int pixel, QColor color) {
+
+	rlbox::rlbox_sandbox<rlbox_noop_sandbox> sandbox;
+	sandbox.create_sandbox();
+
 	const auto image = [](int size) {
 		auto result = QImage(
 			size,
@@ -140,9 +160,22 @@ QImage QrExact(const Qr::Data &data, int pixel, QColor color) {
 		}
 		return result;
 	};
-	return Qr::ReplaceCenter(
+
+	// sandbox ReplaceSize
+	// tainted<Data_r, rlbox_noop_sandbox> d{};
+	// auto data_test = d.data;
+	// auto resultT = sandbox.invoke_sandbox_function(Qr::ReplaceSize, d, pixel);
+
+	auto return_value = Qr::ReplaceCenter(
 		Qr::Generate(data, pixel, color),
 		image(Qr::ReplaceSize(data, pixel)));
+
+	// auto return_value = Qr::ReplaceCenter(
+	// 	Qr::Generate(data, pixel, color),
+	// 	image(resultT.UNSAFE_unverified()));
+	sandbox.destroy_sandbox(); 
+
+	return return_value;
 }
 
 QImage Qr(const Qr::Data &data, int pixel, int max = 0) {

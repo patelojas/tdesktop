@@ -505,11 +505,10 @@ void Generator::paintComposeArea() {
 	const auto emojiIconTop = (st::historyAttachEmoji.iconPosition.y() < 0)
 		? ((st::historyAttachEmoji.height - st::historyAttachEmoji.icon.height()) / 2)
 		: st::historyAttachEmoji.iconPosition.y();
-	const auto &emojiIcon = st::historyAttachEmoji.icon[_palette];
 	right += st::historyAttachEmoji.width;
 	auto attachEmojiLeft = _composeArea.x() + _composeArea.width() - right;
 	_p->fillRect(attachEmojiLeft, controlsTop, st::historyAttachEmoji.width, st::historyAttachEmoji.height, st::historyComposeAreaBg[_palette]);
-	emojiIcon.paint(*_p, attachEmojiLeft + emojiIconLeft, controlsTop + emojiIconTop, _rect.width());
+	st::historyAttachEmoji.icon[_palette].paint(*_p, attachEmojiLeft + emojiIconLeft, controlsTop + emojiIconTop, _rect.width());
 
 	auto pen = st::historyEmojiCircleFg[_palette]->p;
 	pen.setWidth(st::historyEmojiCircleLine);
@@ -518,13 +517,7 @@ void Generator::paintComposeArea() {
 	_p->setBrush(Qt::NoBrush);
 
 	PainterHighQualityEnabler hq(*_p);
-	const auto skipx = emojiIcon.width() / 4;
-	const auto skipy = emojiIcon.height() / 4;
-	const auto inner = QRect(
-		attachEmojiLeft + emojiIconLeft + skipx,
-		controlsTop + emojiIconTop + skipy,
-		emojiIcon.width() - 2 * skipx,
-		emojiIcon.height() - 2 * skipy);
+	auto inner = QRect(QPoint(attachEmojiLeft + (st::historyAttachEmoji.width - st::historyEmojiCircle.width()) / 2, controlsTop + st::historyEmojiCircleTop), st::historyEmojiCircle);
 	_p->drawEllipse(inner);
 
 	auto fieldLeft = _composeArea.x() + st::historyAttach.width;
@@ -1007,8 +1000,8 @@ void DefaultPreviewWindowTitle(Painter &p, const style::palette &palette, QRect 
 	auto titleRect = QRect(body.x(), body.y() - st::defaultWindowTitle.height, body.width(), st::defaultWindowTitle.height);
 	p.fillRect(titleRect, QColor(0, 0, 0));
 	p.fillRect(titleRect, st::titleBgActive[palette]);
-	auto right = st::defaultWindowTitle.close.width;
-	st::defaultWindowTitle.close.icon[palette].paint(p, titleRect.x() + titleRect.width() - right + st::defaultWindowTitle.close.iconPosition.x(), titleRect.y() + st::windowTitleButtonClose.iconPosition.y(), outerWidth);
+	auto right = st::windowTitleButtonClose.width;
+	st::windowTitleButtonClose.icon[palette].paint(p, titleRect.x() + titleRect.width() - right + st::windowTitleButtonClose.iconPosition.x(), titleRect.y() + st::windowTitleButtonClose.iconPosition.y(), outerWidth);
 	right += st::defaultWindowTitle.maximize.width;
 	st::defaultWindowTitle.maximize.icon[palette].paint(p, titleRect.x() + titleRect.width() - right + st::defaultWindowTitle.maximize.iconPosition.x(), titleRect.y() + st::defaultWindowTitle.maximize.iconPosition.y(), outerWidth);
 	right += st::defaultWindowTitle.minimize.width;

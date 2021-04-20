@@ -26,9 +26,8 @@ Content ContentFromState(
 			const QString &id,
 			const QString &label,
 			const QString &info,
-			float64 progress,
-			uint64 randomId = 0) {
-		result.rows.push_back({ id, label, info, progress, randomId });
+			float64 progress) {
+		result.rows.push_back({ id, label, info, progress });
 	};
 	const auto pushMain = [&](const QString &label) {
 		const auto info = (state.entityCount > 0)
@@ -57,10 +56,7 @@ Content ContentFromState(
 			: addPart(state.entityIndex, state.entityCount);
 		push("main", label, info, doneProgress + addProgress);
 	};
-	const auto pushBytes = [&](
-			const QString &id,
-			const QString &label,
-			uint64 randomId) {
+	const auto pushBytes = [&](const QString &id, const QString &label) {
 		if (!state.bytesCount) {
 			return;
 		}
@@ -68,7 +64,7 @@ Content ContentFromState(
 		const auto info = Ui::FormatDownloadText(
 			state.bytesLoaded,
 			state.bytesCount);
-		push(id, label, info, progress, randomId);
+		push(id, label, info, progress);
 	};
 	switch (state.step) {
 	case Step::Initializing:
@@ -84,8 +80,7 @@ Content ContentFromState(
 		pushMain(tr::lng_export_state_userpics(tr::now));
 		pushBytes(
 			"userpic" + QString::number(state.entityIndex),
-			state.bytesName,
-			state.bytesRandomId);
+			state.bytesName);
 		break;
 	case Step::Contacts:
 		pushMain(tr::lng_export_option_contacts(tr::now));
@@ -122,8 +117,7 @@ Content ContentFromState(
 				+ QString::number(state.entityIndex)
 				+ '_'
 				+ QString::number(state.itemIndex)),
-			state.bytesName,
-			state.bytesRandomId);
+			state.bytesName);
 		break;
 	default: Unexpected("Step in ContentFromState.");
 	}

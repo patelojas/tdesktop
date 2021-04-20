@@ -681,15 +681,12 @@ bool Get(
 	}
 	dialog.selectFile(startFile);
 
-	const auto res = dialog.exec();
+	int res = dialog.exec();
 
-	if (type != Type::ReadFolder) {
-		// Save last used directory for all queries except directory choosing.
-		const auto path = dialog.directory().absolutePath();
-		if (!path.isEmpty() && path != cDialogLastPath()) {
-			cSetDialogLastPath(path);
-			Local::writeSettings();
-		}
+	QString path = dialog.directory().absolutePath();
+	if (path != cDialogLastPath()) {
+		cSetDialogLastPath(path);
+		Local::writeSettings();
 	}
 
 	if (res == QDialog::Accepted) {

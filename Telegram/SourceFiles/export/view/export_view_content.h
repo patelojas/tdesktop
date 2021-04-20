@@ -22,7 +22,6 @@ struct Content {
 		QString label;
 		QString info;
 		float64 progress = 0.;
-		uint64 randomId = 0;
 	};
 
 	std::vector<Row> rows;

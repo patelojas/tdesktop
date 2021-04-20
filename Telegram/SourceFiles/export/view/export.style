@@ -50,8 +50,7 @@ exportErrorLabel: FlatLabel(boxLabel) {
 
 exportProgressDuration: 200;
 exportProgressRowHeight: 30px;
-exportProgressRowPadding: margins(22px, 10px, 22px, 10px);
-exportProgressRowSkip: 10px;
+exportProgressRowPadding: margins(22px, 10px, 22px, 20px);
 exportProgressLabel: FlatLabel(boxLabel) {
 	textFg: windowBoldFg;
 	maxHeight: 20px;
